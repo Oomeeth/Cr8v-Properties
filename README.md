@@ -5,3 +5,9 @@
 22/05/2022 - 22/05/2022 - Implement user authentication with Firebase.
 23/05/2022 - 24/05/2022 - Code home page, add a property and delete a property.
 25/05/2022 - Allow user to edit profile.
+
+# Login Screen:
+![Login](https://ibb.co/5Y769WL)
+
+# Sign Up Screen:
+![Login](https://ibb.co/TvbhM9r)
