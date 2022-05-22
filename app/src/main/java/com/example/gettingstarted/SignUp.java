@@ -22,17 +22,9 @@ import android.graphics.drawable.Drawable;
 
 public class SignUp extends AppCompatActivity {
 
-    public static final String SIGN_UP_MESSAGE = "com.example.gettingstarted.MESSAGE";
-
     private FirebaseAuth mAuth;
 
     private Context mContext;
-
-    enum FieldType{
-        NORMAL,
-        EMAIL,
-        PASSWORD
-    }
 
     private EditText usernameEditText;
     private EditText nameEditText;
