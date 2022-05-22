@@ -11,12 +11,14 @@ import android.widget.EditText;
 import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ProgressBar;
 import android.view.View;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import androidx.annotation.NonNull;
 import android.view.WindowManager;
 import android.text.TextUtils;
+import android.graphics.drawable.Drawable;
 
 public class SignUp extends AppCompatActivity {
 
@@ -25,6 +27,12 @@ public class SignUp extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private Context mContext;
+
+    enum FieldType{
+        NORMAL,
+        EMAIL,
+        PASSWORD
+    }
 
     private EditText usernameEditText;
     private EditText nameEditText;
@@ -39,19 +47,23 @@ public class SignUp extends AppCompatActivity {
     private TextView emailTextView;
     private TextView passwordTextView;
     private TextView passwordConfirmTextView;
+    private TextView sixCharacterPasswordTextView;
+    private TextView sixCharacterPasswordConfirmTextView;
 
-    private TextView passwordMismatchTextView;
-    private TextView passwordConfirmMismatchTextView;
+    private View loadingBackgroundView;
+    private ProgressBar loadingProgressBar;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+    private Drawable correctBackgroundForEditText;
+    private Drawable errorBackgroundForEditText;
 
-        mAuth = FirebaseAuth.getInstance();
+    private void InitializeResources()
+    {
+        correctBackgroundForEditText = getResources().getDrawable(R.drawable.edit_text_border);
+        errorBackgroundForEditText = getResources().getDrawable(R.drawable.edit_text_border_error);
+    }
 
-        mContext = this;
-
+    private void InitializeWidgets()
+    {
         usernameEditText = (EditText)findViewById(R.id.username_sign_up);
         nameEditText = (EditText)findViewById(R.id.name_sign_up);
         surnameEditText = (EditText)findViewById(R.id.surname_sign_up);
@@ -65,127 +77,106 @@ public class SignUp extends AppCompatActivity {
         emailTextView = (TextView)findViewById(R.id.email_error_sign_up);
         passwordTextView = (TextView)findViewById(R.id.password_error_sign_up);
         passwordConfirmTextView = (TextView)findViewById(R.id.password_confirm_error_sign_up);
+        sixCharacterPasswordTextView = (TextView)findViewById(R.id.password_error_six_characters);
+        sixCharacterPasswordConfirmTextView = (TextView)findViewById(R.id.password_confirm_error_six_characters);
 
-        passwordMismatchTextView = (TextView)findViewById(R.id.password_mismatch_sign_up);
-        passwordConfirmMismatchTextView = (TextView)findViewById(R.id.password_confirm_mismatch_sign_up);
+        loadingBackgroundView = (View)findViewById(R.id.interaction_blocker_sign_up);
+        loadingProgressBar = (ProgressBar)findViewById(R.id.loading_icon_sign_up);
     }
 
-    public void SignUpButton(View view)
+    private void ErrorAction(EditText _editTextInput, TextView _errorTextView, Drawable _backgroundForEditText, String errorMessage)
     {
-        boolean hasError = false;
+        _editTextInput.setBackgroundDrawable(_backgroundForEditText);
+        _errorTextView.setText(errorMessage);
+        _errorTextView.setVisibility(View.VISIBLE);
+    }
 
-        if(TextUtils.isEmpty(usernameEditText.getText()))
+    private void CorrectAction(EditText _editTextInput, TextView _errorTextView, Drawable _backgroundForEditText)
+    {
+        _editTextInput.setBackgroundDrawable(_backgroundForEditText);
+        _errorTextView.setText("");
+        _errorTextView.setVisibility(View.INVISIBLE);
+    }
+
+    private boolean Validation_IsInputEmpty(EditText _editTextInput, TextView _errorTextView, Drawable _correctBackgroundForEditText, Drawable _errorBackgroundForEditText)
+    {
+        String errorMessage = "Field cannot be empty!";
+
+        if(TextUtils.isEmpty(_editTextInput.getText()))
         {
-            usernameEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-            usernameTextView.setVisibility(View.VISIBLE);
-            hasError = true;
+            ErrorAction(_editTextInput, _errorTextView, _errorBackgroundForEditText, errorMessage);
+
+            return true;
         }
         else
         {
-            usernameEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-            usernameTextView.setVisibility(View.INVISIBLE);
-        }
+            CorrectAction(_editTextInput, _errorTextView, _correctBackgroundForEditText);
 
-        if(TextUtils.isEmpty(nameEditText.getText()))
-        {
-            nameEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-            nameTextView.setVisibility(View.VISIBLE);
-            hasError = true;
+            return false;
         }
-        else
-        {
-            nameEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-            nameTextView.setVisibility(View.INVISIBLE);
-        }
+    }
 
-        if(TextUtils.isEmpty(surnameEditText.getText()))
-        {
-            surnameEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-            surnameTextView.setVisibility(View.VISIBLE);
-            hasError = true;
-        }
-        else
-        {
-            surnameEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-            surnameTextView.setVisibility(View.INVISIBLE);
-        }
+    private boolean Validation_ArePasswordsDifferent(EditText _editTextPassword, TextView _textViewError, EditText _editTextPasswordConfirm, TextView _textViewErrorConfirm, Drawable _correctBackgroundForEditText, Drawable _errorBackgroundForEditText)
+    {
+        String errorMessage = "Passwords do not match!";
 
-        if(TextUtils.isEmpty(emailEditText.getText()))
+        if(!TextUtils.isEmpty(_editTextPassword.getText()) && !TextUtils.isEmpty(_editTextPasswordConfirm.getText()))
         {
-            emailEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-            emailTextView.setVisibility(View.VISIBLE);
-            hasError = true;
-        }
-        else
-        {
-            emailEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-            emailTextView.setVisibility(View.INVISIBLE);
-        }
-
-        if(TextUtils.isEmpty(passwordEditText.getText()))
-        {
-            passwordEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-            passwordTextView.setVisibility(View.VISIBLE);
-            hasError = true;
-        }
-        else
-        {
-            passwordEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-            passwordTextView.setVisibility(View.INVISIBLE);
-        }
-
-        if(TextUtils.isEmpty(passwordConfirmEditText.getText()))
-        {
-            passwordConfirmEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-            passwordConfirmTextView.setVisibility(View.VISIBLE);
-            hasError = true;
-        }
-        else
-        {
-            passwordConfirmEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-            passwordConfirmTextView.setVisibility(View.INVISIBLE);
-        }
-
-        if(!TextUtils.isEmpty(passwordEditText.getText()) && !TextUtils.isEmpty(passwordConfirmEditText.getText()))
-        {
-            if(!passwordEditText.getText().toString().equals(passwordConfirmEditText.getText().toString()))
+            if(!_editTextPassword.getText().toString().equals(_editTextPasswordConfirm.getText().toString()))
             {
-                passwordEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
-                passwordConfirmEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border_error));
+                ErrorAction(_editTextPassword, _textViewError, _errorBackgroundForEditText, errorMessage);
+                ErrorAction(_editTextPasswordConfirm, _textViewErrorConfirm, _errorBackgroundForEditText, errorMessage);
 
-                passwordTextView.setVisibility(View.INVISIBLE);
-                passwordConfirmTextView.setVisibility(View.INVISIBLE);
-
-                passwordMismatchTextView.setVisibility(View.VISIBLE);
-                passwordConfirmMismatchTextView.setVisibility(View.VISIBLE);
-
-                hasError = true;
+                return true;
             }
             else
             {
-                passwordEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
-                passwordConfirmEditText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edit_text_border));
+                CorrectAction(_editTextPassword, _textViewError, _correctBackgroundForEditText);
+                CorrectAction(_editTextPasswordConfirm, _textViewErrorConfirm, _correctBackgroundForEditText);
 
-                passwordMismatchTextView.setVisibility(View.INVISIBLE);
-                passwordConfirmMismatchTextView.setVisibility(View.INVISIBLE);
+                return false;
             }
         }
-
-        if(hasError)
+        else
         {
-            hasError = false;
-            return;
+            return true;
+        }
+    }
+
+    private boolean Validation_ArePasswordsSixCharactersOrMore(EditText _editTextPassword, TextView _textViewError, EditText _editTextPasswordConfirm, TextView _textViewErrorConfirm, Drawable _correctBackgroundForEditText, Drawable _errorBackgroundForEditText)
+    {
+        boolean hasErrors = false;
+        String errorMessage = "Password is less than 6 characters!";
+
+        if(_editTextPassword.getText().toString().length() < 6)
+        {
+            ErrorAction(_editTextPassword, _textViewError, _errorBackgroundForEditText, errorMessage);
+        }
+        else
+        {
+            CorrectAction(_editTextPassword, _textViewError, _correctBackgroundForEditText);
         }
 
+        if(_editTextPasswordConfirm.getText().toString().length() < 6)
+        {
+            ErrorAction(_editTextPasswordConfirm, _textViewErrorConfirm, _errorBackgroundForEditText, errorMessage);
+        }
+        else
+        {
+            CorrectAction(_editTextPasswordConfirm, _textViewErrorConfirm, _correctBackgroundForEditText);
+        }
+
+        return hasErrors;
+    }
+
+    private void SubmitUserDataToFireBase(EditText _editTextEmail, EditText _editTextPassword)
+    {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 
-        findViewById(R.id.interaction_blocker_sign_up).setVisibility(View.VISIBLE);
-        findViewById(R.id.loading_icon_sign_up).setVisibility(View.VISIBLE);
+        loadingBackgroundView.setVisibility(View.VISIBLE);
+        loadingProgressBar.setVisibility(View.VISIBLE);
 
-        EditText emailValue = (EditText)findViewById(R.id.email_sign_up);
-        EditText passwordValue = (EditText)findViewById(R.id.password_sign_up);
-
-        mAuth.createUserWithEmailAndPassword(emailValue.getText().toString(), passwordValue.getText().toString())
+        mAuth.createUserWithEmailAndPassword(_editTextEmail.getText().toString(), _editTextPassword.getText().toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>(){
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task){
@@ -196,11 +187,75 @@ public class SignUp extends AppCompatActivity {
                             startActivity(intent);
                         }
                         else{
-                            findViewById(R.id.interaction_blocker_sign_up).setVisibility(View.INVISIBLE);
-                            findViewById(R.id.loading_icon_sign_up).setVisibility(View.INVISIBLE);
-                            Toast.makeText(SignUp.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
+                            loadingBackgroundView.setVisibility(View.INVISIBLE);
+                            loadingProgressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(SignUp.this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sign_up);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mContext = this;
+
+        InitializeResources();
+
+        InitializeWidgets();
+    }
+
+    public void SignUpButton(View view)
+    {
+        boolean hasError = false;
+
+        if(Validation_IsInputEmpty(usernameEditText, usernameTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_IsInputEmpty(nameEditText, nameTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_IsInputEmpty(surnameEditText, surnameTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_IsInputEmpty(emailEditText, emailTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_IsInputEmpty(passwordEditText, passwordTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_IsInputEmpty(passwordConfirmEditText, passwordConfirmTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_ArePasswordsDifferent(passwordEditText, passwordTextView, passwordConfirmEditText, passwordConfirmTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(Validation_ArePasswordsSixCharactersOrMore(passwordEditText, sixCharacterPasswordTextView, passwordConfirmEditText, sixCharacterPasswordConfirmTextView, correctBackgroundForEditText, errorBackgroundForEditText))
+        {
+            hasError = true;
+        }
+
+        if(!hasError)
+        {
+            SubmitUserDataToFireBase(emailEditText, passwordEditText);
+        }
     }
 }

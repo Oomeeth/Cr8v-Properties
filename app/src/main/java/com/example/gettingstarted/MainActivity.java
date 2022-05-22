@@ -19,11 +19,9 @@ import android.content.Context;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+    private void DisplaySignUpActivityMessage()
+    {
         Intent intent = getIntent();
         String message = intent.getStringExtra(SignUp.SIGN_UP_MESSAGE);
 
@@ -33,7 +31,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void SignUpScreen(View view)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        DisplaySignUpActivityMessage();
+    }
+
+    public void GoToSignUpScreen(View view)
     {
         Intent intent = new Intent(this, SignUp.class);
         startActivity(intent);

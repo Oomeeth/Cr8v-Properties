@@ -108,7 +108,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="30dp"
             android:background="#00F7FF"
-            android:onClick="SignUpScreen"
+            android:onClick="GoToSignUpScreen"
             android:text="Register"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
