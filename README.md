@@ -5,7 +5,7 @@
 
 20/05/2022 - 21/05/2022 - Setting up Firebase and implementing user sign in with Firebase.
 
-22/05/2022 - 22/05/2022 - Implement user authentication with Firebase.
+22/05/2022 - 22/05/2022 - Refactored and cleaned up code. Implement user authentication with Firebase.
 
 23/05/2022 - 24/05/2022 - Code home page, add a property and delete a property.
 
