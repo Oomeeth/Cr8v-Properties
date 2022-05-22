@@ -12,7 +12,7 @@
 25/05/2022 - Allow user to edit profile.
 
 # Login Screen:
-![Login](https://i.ibb.co/r7cy2Dv/1.png)
+![Login](https://i.ibb.co/Qk7xLYr/1.png)
 
 # Sign Up Screen:
 ![Sign Up](https://i.ibb.co/r7cy2Dv/2.png)
