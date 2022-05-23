@@ -19,6 +19,7 @@ task clean(type: Delete) {
 
 allprojects {
     repositories {
+        mavenCentral()
         google()
     }
 }
