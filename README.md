@@ -7,7 +7,7 @@
 
 22/05/2022 - 22/05/2022 - Implementing sign up functionality.
 
-23/05/2022 - Sign ip functionality completed. Refactoring code. Implementing user authentication.
+23/05/2022 - Sign up functionality completed. Refactoring code. Implementing user authentication.
 
 # Completed tasks:
 - Learning Android + Java.
@@ -26,3 +26,6 @@
 
 # Sign Up Screen:
 ![Sign Up](https://i.ibb.co/r7cy2Dv/2.png)
+
+# Interesting articles
+https://stackoverflow.com/questions/4732544/why-are-only-final-variables-accessible-in-anonymous-class
