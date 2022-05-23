@@ -14,10 +14,9 @@
 - Learn Firebase.
 - Setting up Firebase.
 - Design sign up screen + develop functionality for sign up screen.
-- Design log in screen
+- Design log in screen + Develop functionality for log in screen.
 
 # Outstanding tasks:
-- Develop functionality for log in screen.
 - Code home page, add a property, update a property entry and delete a property entry.
 - Allow user to edit profile.
 
@@ -29,3 +28,6 @@
 
 # Interesting articles
 https://stackoverflow.com/questions/4732544/why-are-only-final-variables-accessible-in-anonymous-class
+
+# Demo
+https://youtu.be/C9OH4u-cHoA

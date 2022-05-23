@@ -6,29 +6,29 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
+
 import android.widget.EditText;
 import android.content.Context;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ProgressBar;
 import android.view.View;
-import com.google.firebase.firestore.DocumentReference;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import androidx.annotation.NonNull;
 import android.view.WindowManager;
-import android.text.TextUtils;
 import android.graphics.drawable.Drawable;
 import java.util.Map;
 import java.util.HashMap;
+import custom.utilities.Validation;
 
 public class SignUp extends AppCompatActivity {
+
+    private Validation validation;
 
     public static final String SIGN_UP_MESSAGE = "com.example.gettingstarted.MESSAGE";
 
@@ -68,7 +68,7 @@ public class SignUp extends AppCompatActivity {
 
     private void InitializeWidgets()
     {
-        usernameEditText = (EditText)findViewById(R.id.username_sign_up);
+        usernameEditText = (EditText)findViewById(R.id.email_sign_in);
         nameEditText = (EditText)findViewById(R.id.name_sign_up);
         surnameEditText = (EditText)findViewById(R.id.surname_sign_up);
         emailEditText = (EditText)findViewById(R.id.email_sign_up);
@@ -86,120 +86,6 @@ public class SignUp extends AppCompatActivity {
 
         loadingBackgroundView = (View)findViewById(R.id.interaction_blocker_sign_up);
         loadingProgressBar = (ProgressBar)findViewById(R.id.loading_icon_sign_up);
-    }
-
-    //Actions to take for each input field after user presses submit button (such as setting error messages, etc).
-    private void SubmitAction(EditText _editTextInput, TextView _errorTextView, Drawable _backgroundForEditText, String _message)
-    {
-        _editTextInput.setBackgroundDrawable(_backgroundForEditText);
-        _errorTextView.setText(_message);
-    }
-
-    //Ensures fields are not empty.
-    private boolean Validation_IsInputEmpty(EditText _editTextInput, TextView _errorTextView)
-    {
-        Drawable backgroundForEditText;
-        String message;
-        boolean isError;
-
-        if(TextUtils.isEmpty(_editTextInput.getText()))
-        {
-            message = "Field cannot be empty!";
-            backgroundForEditText = errorBackgroundForEditText;
-            isError = true;
-        }
-        else
-        {
-            message = "";
-            backgroundForEditText = correctBackgroundForEditText;
-            isError = false;
-        }
-
-        SubmitAction(_editTextInput, _errorTextView, backgroundForEditText, message);
-
-        return isError;
-    }
-
-    //Ensures passwords match.
-    private boolean Validation_ArePasswordsDifferent(EditText _editTextPassword, TextView _textViewError, EditText _editTextPasswordConfirm, TextView _textViewErrorConfirm)
-    {
-        Drawable backgroundForEditText;
-        String message;
-        boolean isError;
-
-        if(!TextUtils.isEmpty(_editTextPassword.getText()) && !TextUtils.isEmpty(_editTextPasswordConfirm.getText()))
-        {
-            if(!_editTextPassword.getText().toString().equals(_editTextPasswordConfirm.getText().toString()))
-            {
-                backgroundForEditText = errorBackgroundForEditText;
-                message = "Passwords do not match!";
-                isError = true;
-            }
-            else
-            {
-                backgroundForEditText = correctBackgroundForEditText;
-                message = "";
-                isError = false;
-            }
-        }
-        else
-        {
-            return true;
-        }
-
-        SubmitAction(_editTextPassword, _textViewError, backgroundForEditText, message);
-        SubmitAction(_editTextPasswordConfirm, _textViewErrorConfirm, backgroundForEditText, message);
-
-        return isError;
-    }
-
-    //Ensures passwords are more than 6 characters (Firebase Auth requirement)
-    private boolean Validation_ArePasswordsLessThanSixCharacters(EditText _editTextPassword, TextView _textViewError, EditText _editTextPasswordConfirm, TextView _textViewErrorConfirm)
-    {
-        Drawable backgroundForEditText;
-        boolean isPasswordError;
-        boolean isPasswordConfirmError;
-        String message;
-
-        if(_editTextPassword.getText().toString().length() < 6)
-        {
-            backgroundForEditText = errorBackgroundForEditText;
-            isPasswordError = true;
-            message = "Password is less than 6 characters!";
-        }
-        else
-        {
-            backgroundForEditText = correctBackgroundForEditText;
-            isPasswordError = false;
-            message = "";
-        }
-
-        SubmitAction(_editTextPassword, _textViewError, backgroundForEditText, message);
-
-        if(_editTextPasswordConfirm.getText().toString().length() < 6)
-        {
-            backgroundForEditText = errorBackgroundForEditText;
-            isPasswordConfirmError = true;
-            message = "Password is less than 6 characters!";
-        }
-        else
-        {
-            backgroundForEditText = correctBackgroundForEditText;
-            isPasswordConfirmError = false;
-            message = "";
-        }
-
-        SubmitAction(_editTextPasswordConfirm, _textViewErrorConfirm, backgroundForEditText, message);
-
-        return (isPasswordError || isPasswordConfirmError);
-    }
-
-    private boolean Validation_ArePasswordsIncorrect(EditText _editTextPassword, TextView _textViewError, TextView _sixCharacterPasswordTextView, EditText _editTextPasswordConfirm, TextView _textViewErrorConfirm, TextView _sixCharacterPasswordConfirmTextView)
-    {
-        boolean arePasswordsDifferent = Validation_ArePasswordsDifferent(_editTextPassword, _textViewError, _editTextPasswordConfirm, _textViewErrorConfirm);
-        boolean arePasswordsLessThanSixCharacters = Validation_ArePasswordsLessThanSixCharacters(_editTextPassword, _sixCharacterPasswordTextView, _editTextPasswordConfirm, _sixCharacterPasswordConfirmTextView);
-
-        return (arePasswordsDifferent || arePasswordsLessThanSixCharacters);
     }
 
     //Submits data (email and password) to Firebase Auth. Additional arguments are sent to SubmitUserData().
@@ -247,6 +133,7 @@ public class SignUp extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid)
                     {
+                        FirebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(mContext, MainActivity.class);
                         String message = "Successfully Signed Up";
                         intent.putExtra(SIGN_UP_MESSAGE, message);
@@ -276,6 +163,8 @@ public class SignUp extends AppCompatActivity {
 
         mContext = this;
 
+        validation = new Validation();
+
         InitializeResources();
 
         InitializeWidgets();
@@ -285,37 +174,37 @@ public class SignUp extends AppCompatActivity {
     {
         boolean hasError = false;
 
-        if(Validation_IsInputEmpty(usernameEditText, usernameTextView))
+        if(validation.Validation_IsInputEmpty(usernameEditText, usernameTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }
 
-        if(Validation_IsInputEmpty(nameEditText, nameTextView))
+        if(validation.Validation_IsInputEmpty(nameEditText, nameTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }
 
-        if(Validation_IsInputEmpty(surnameEditText, surnameTextView))
+        if(validation.Validation_IsInputEmpty(surnameEditText, surnameTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }
 
-        if(Validation_IsInputEmpty(emailEditText, emailTextView))
+        if(validation.Validation_IsInputEmpty(emailEditText, emailTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }
 
-        if(Validation_IsInputEmpty(passwordEditText, passwordTextView))
+        if(validation.Validation_IsInputEmpty(passwordEditText, passwordTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }
 
-        if(Validation_IsInputEmpty(passwordConfirmEditText, passwordConfirmTextView))
+        if(validation.Validation_IsInputEmpty(passwordConfirmEditText, passwordConfirmTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }
 
-        if(Validation_ArePasswordsIncorrect(passwordEditText, passwordTextView, sixCharacterPasswordTextView, passwordConfirmEditText, passwordConfirmTextView, sixCharacterPasswordConfirmTextView))
+        if(validation.Validation_ArePasswordsIncorrect(passwordEditText, passwordTextView, sixCharacterPasswordTextView, passwordConfirmEditText, passwordConfirmTextView, sixCharacterPasswordConfirmTextView, errorBackgroundForEditText, correctBackgroundForEditText))
         {
             hasError = true;
         }

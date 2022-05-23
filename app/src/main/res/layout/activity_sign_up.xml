@@ -58,7 +58,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
         <EditText
-            android:id="@+id/username_sign_up"
+            android:id="@+id/email_sign_in"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
@@ -81,7 +81,7 @@
             android:textColor="#FF0000"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/username_sign_up"
+            app:layout_constraintTop_toBottomOf="@+id/email_sign_in"
             tools:ignore="TextContrastCheck" />
 
         <EditText
