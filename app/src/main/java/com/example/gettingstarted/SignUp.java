@@ -84,8 +84,8 @@ public class SignUp extends AppCompatActivity {
         sixCharacterPasswordTextView = (TextView)findViewById(R.id.password_error_six_characters);
         sixCharacterPasswordConfirmTextView = (TextView)findViewById(R.id.password_confirm_error_six_characters);
 
-        loadingBackgroundView = (View)findViewById(R.id.interaction_blocker_sign_up);
-        loadingProgressBar = (ProgressBar)findViewById(R.id.loading_icon_sign_up);
+        loadingBackgroundView = (View)findViewById(R.id.interaction_blocker_add_new);
+        loadingProgressBar = (ProgressBar)findViewById(R.id.loading_icon_add_new);
     }
 
     //Submits data (email and password) to Firebase Auth. Additional arguments are sent to SubmitUserData().

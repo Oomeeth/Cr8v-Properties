@@ -11,6 +11,11 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import android.view.View;
 import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
+import androidx.appcompat.widget.Toolbar;
+import android.view.InflateException;
+import android.widget.Toast;
 
 public class PropertyHome extends AppCompatActivity {
 
@@ -20,12 +25,25 @@ public class PropertyHome extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void DisplayNewPropertyEntryMessage()
+    {
+        Intent intent = getIntent();
+        String message = intent.getStringExtra(NewPropertyEntry.MESSAGE);
+
+        if(message != null && !message.trim().isEmpty())
+        {
+            Toast.makeText(PropertyHome.this, message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_property_home);
 
-        /*for(int i = 0; i < 30; ++i)
+        DisplayNewPropertyEntryMessage();
+
+        /*for(int i = 0; i < 40; ++i)
         {
             LinearLayout mainLayout = (LinearLayout)findViewById(R.id.linear_layout);
 
@@ -46,7 +64,25 @@ public class PropertyHome extends AppCompatActivity {
         }*/
     }
 
-    public void AppLogout(View view)
+    // create an action bar button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        try {
+            getMenuInflater().inflate(R.menu.actionbarmenu, menu);
+        }
+        catch(InflateException e)
+        {
+            Toast.makeText(PropertyHome.this, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void NewPropertyScreen(MenuItem menuItem)
+    {
+        ChangeActivity(NewPropertyEntry.class);
+    }
+
+    public void UserLogout(MenuItem menuItem)
     {
         FirebaseAuth.getInstance().signOut();
         ChangeActivity(MainActivity.class);
