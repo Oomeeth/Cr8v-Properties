@@ -80,6 +80,10 @@ public class NewPropertyEntry extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> launcher;
 
+    private String nextScreenMessage = "";
+
+    /*Initialization Start*/
+
     private void InitializeResources()
     {
         correctBackgroundForEditText = getResources().getDrawable(R.drawable.edit_text_border);
@@ -106,149 +110,6 @@ public class NewPropertyEntry extends AppCompatActivity {
         loadingProgressBar = (ProgressBar)findViewById(R.id.loading_icon_add_new);
     }
 
-    private String GetUserUID()
-    {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null)
-        {
-            return user.getUid();
-        }
-        else
-        {
-            return "";
-        }
-    }
-
-    //Get property count
-       //Set new property count
-          //Submit data to FireStore
-       //Upload Property Image
-    private void InitiateDataSubmissionProcess()
-    {
-        loadingView.setVisibility(View.VISIBLE);
-        loadingProgressBar.setVisibility(View.VISIBLE);
-
-        GetPropertyLength();
-    }
-
-    private void GetPropertyLength()
-    {
-        db.collection("properties").document("property_length").get().addOnCompleteListener(
-                new OnCompleteListener<DocumentSnapshot>(){
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task)
-                    {
-                        if(task.isSuccessful())
-                        {
-                            DocumentSnapshot document = task.getResult();
-
-                            if(document.exists())
-                            {
-                                int getPropertyLength = (int)Math.floor(document.getDouble("length"));
-                                getPropertyLength += 1;
-                                UpdatePropertyLength(getPropertyLength);
-                                UploadPropertyImage(getPropertyLength);
-                            }
-                            else
-                            {
-                                loadingView.setVisibility(View.INVISIBLE);
-                                loadingProgressBar.setVisibility(View.INVISIBLE);
-                                Toast.makeText(NewPropertyEntry.this, "Document does not exist!", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                        else
-                        {
-                            loadingView.setVisibility(View.INVISIBLE);
-                            loadingProgressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(NewPropertyEntry.this, "Something Went Wrong With Retrieving!", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }
-        );
-    }
-
-    private void UpdatePropertyLength(final int _getPropertyLength)
-    {
-        Map<String, Object> _propertyLength = new HashMap<>();
-
-        _propertyLength.put("length", _getPropertyLength);
-
-        db.collection("properties").document("property_length").update(_propertyLength).addOnSuccessListener(
-                new OnSuccessListener<Void>(){
-                    @Override
-                    public void onSuccess(Void aVoid)
-                    {
-                        SubmitEntryData(location.getText().toString(), price.getText().toString(), bedrooms.getText().toString(), bathrooms.getText().toString(), garages.getText().toString(), landSize.getText().toString(), description.getEditText().getText().toString(), _getPropertyLength);
-                    }
-                }
-        ).addOnFailureListener(
-                new OnFailureListener(){
-                    @Override
-                    public void onFailure(@NonNull Exception e)
-                    {
-                        loadingView.setVisibility(View.INVISIBLE);
-                        loadingProgressBar.setVisibility(View.INVISIBLE);
-                        Toast.makeText(NewPropertyEntry.this, "Something Went Wrong With Updating!", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-    }
-
-    private void SubmitEntryData(String _location, String _price, String _bedrooms, String _bathrooms, String _garages, String _landSize, String _description, int _getPropertyLength)
-    {
-        String userUID = GetUserUID();
-
-        if(!TextUtils.isEmpty(userUID))
-        {
-            Map<String, Object> propertyRoot = new HashMap<>();
-            Map<String, Object> property = new HashMap<>();
-
-            property.put("location", _location);
-            property.put("price", _price);
-            property.put("bedrooms", _bedrooms);
-            property.put("bathrooms", _bathrooms);
-            property.put("garages", _garages);
-            property.put("landSize", _landSize);
-            property.put("description", _description);
-            property.put("created_by", userUID);
-            property.put("created_on", FieldValue.serverTimestamp());
-
-            propertyRoot.put(String.valueOf(_getPropertyLength), property);
-
-            db.collection("properties").document("all_properties").update(propertyRoot).addOnSuccessListener(
-                    new OnSuccessListener<Void>()
-                    {
-                        @Override
-                        public void onSuccess(Void aVoid)
-                        {
-                            Toast.makeText(NewPropertyEntry.this, "Successfully Created A New Entry!", Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(mContext, PropertyHome.class);
-                            String message = "Successfully Added A New Property!";
-                            intent.putExtra(MESSAGE, message);
-                            startActivity(intent);
-                        }
-                    }
-            ).addOnFailureListener(
-                    new OnFailureListener()
-                    {
-                        @Override
-                        public void onFailure(@NonNull Exception e)
-                        {
-                            Toast.makeText(NewPropertyEntry.this, "Error Submitting Data", Toast.LENGTH_LONG).show();
-                        }
-                    }
-            );
-        }
-        else
-        {
-            loadingView.setVisibility(View.INVISIBLE);
-            loadingProgressBar.setVisibility(View.INVISIBLE);
-
-            Toast.makeText(NewPropertyEntry.this, "Error! Could not get user's UID", Toast.LENGTH_LONG).show();
-        }
-    }
-
     private void InitializeFilePicker()
     {
         launcher = registerForActivityResult(
@@ -271,36 +132,76 @@ public class NewPropertyEntry extends AppCompatActivity {
         );
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_property_entry);
+    /*Initialization End*/
 
-        mContext = this;
+    /*Backend Interactions Start*/
 
-        db = FirebaseFirestore.getInstance();
+    private String GetUserUID()
+    {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        validation = new Validation();
-
-        InitializeResources();
-
-        InitializeWidgets();
-
-        InitializeFilePicker();
+        if (user != null)
+        {
+            return user.getUid();
+        }
+        else
+        {
+            return "";
+        }
     }
 
-    private void PreviewPropertyImage()
+    //Get property count
+       //Submit data to FireStore
+          //Upload Property Image
+             //Set new property count
+    private void InitiateDataSubmissionProcess()
     {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        intent.setType("image/*");
-        launcher.launch(intent);
+        loadingView.setVisibility(View.VISIBLE);
+        loadingProgressBar.setVisibility(View.VISIBLE);
+
+        GetPropertyLength();
+    }
+
+    private void GetPropertyLength()
+    {
+        db.collection("properties").document("property_length").get().addOnCompleteListener(
+                new OnCompleteListener<DocumentSnapshot>(){
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                    {
+                        if(task.isSuccessful())
+                        {
+                            DocumentSnapshot document = task.getResult();
+
+                            if(document.exists())
+                            {
+                                int getPropertyLength = (int)Math.floor(document.getDouble("length"));
+
+                                UploadPropertyImage(getPropertyLength);
+                            }
+                            else
+                            {
+                                loadingView.setVisibility(View.INVISIBLE);
+                                loadingProgressBar.setVisibility(View.INVISIBLE);
+                                Toast.makeText(NewPropertyEntry.this, "Document does not exist!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        else
+                        {
+                            loadingView.setVisibility(View.INVISIBLE);
+                            loadingProgressBar.setVisibility(View.INVISIBLE);
+                            Toast.makeText(NewPropertyEntry.this, "Something Went Wrong With Retrieving!", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+        );
     }
 
     private void UploadPropertyImage(int _propertyLength)
     {
         String userUID = GetUserUID();
 
-        StorageReference fileUploadStorage = FirebaseStorage.getInstance().getReference().child("properties/" + userUID + "/" + String.valueOf(_propertyLength) + ".png");
+        StorageReference fileUploadStorage = FirebaseStorage.getInstance().getReference().child("properties/" + String.valueOf(_propertyLength) + ".png");
 
         fileUploadStorage.listAll().addOnSuccessListener(
                 new OnSuccessListener<ListResult>(){
@@ -329,7 +230,9 @@ public class NewPropertyEntry extends AppCompatActivity {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot snapshot)
                             {
-                                Toast.makeText(NewPropertyEntry.this, "Uploading...", Toast.LENGTH_SHORT).show();
+                                nextScreenMessage += "Successfully uploaded image!";
+
+                                SubmitEntryData(location.getText().toString(), price.getText().toString(), bedrooms.getText().toString(), bathrooms.getText().toString(), garages.getText().toString(), landSize.getText().toString(), description.getEditText().getText().toString(), _propertyLength);
                             }
                         }).addOnFailureListener(new OnFailureListener(){
                             @Override
@@ -350,6 +253,118 @@ public class NewPropertyEntry extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    private void SubmitEntryData(String _location, String _price, String _bedrooms, String _bathrooms, String _garages, String _landSize, String _description, final int _propertyLength)
+    {
+        String userUID = GetUserUID();
+
+        if(!TextUtils.isEmpty(userUID))
+        {
+            Map<String, Object> propertyRoot = new HashMap<>();
+            Map<String, Object> property = new HashMap<>();
+
+            property.put("location", _location);
+            property.put("price", _price);
+            property.put("bedrooms", _bedrooms);
+            property.put("bathrooms", _bathrooms);
+            property.put("garages", _garages);
+            property.put("landSize", _landSize);
+            property.put("description", _description);
+            property.put("created_by", userUID);
+            property.put("created_on", FieldValue.serverTimestamp());
+
+            propertyRoot.put(String.valueOf(_propertyLength), property);
+
+            db.collection("properties").document("all_properties").update(propertyRoot).addOnSuccessListener(
+                    new OnSuccessListener<Void>()
+                    {
+                        @Override
+                        public void onSuccess(Void aVoid)
+                        {
+                            nextScreenMessage += "Successfully Added A New Property!";
+
+                            IncrementPropertyLength(_propertyLength);
+                        }
+                    }
+            ).addOnFailureListener(
+                    new OnFailureListener()
+                    {
+                        @Override
+                        public void onFailure(@NonNull Exception e)
+                        {
+                            Toast.makeText(NewPropertyEntry.this, "Error Submitting Data", Toast.LENGTH_LONG).show();
+                        }
+                    }
+            );
+        }
+        else
+        {
+            loadingView.setVisibility(View.INVISIBLE);
+            loadingProgressBar.setVisibility(View.INVISIBLE);
+
+            Toast.makeText(NewPropertyEntry.this, "Error! Could not get user's UID", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void IncrementPropertyLength(final int _propertyLength)
+    {
+        Map<String, Object> _propertyLengthMap = new HashMap<>();
+
+        int incrementPropertyLength = _propertyLength + 1;
+
+        _propertyLengthMap.put("length", incrementPropertyLength);
+
+        db.collection("properties").document("property_length").update(_propertyLengthMap).addOnSuccessListener(
+                new OnSuccessListener<Void>(){
+                    @Override
+                    public void onSuccess(Void aVoid)
+                    {
+                        Intent intent = new Intent(mContext, PropertyHome.class);
+                        intent.putExtra(MESSAGE, nextScreenMessage);
+                        startActivity(intent);
+                    }
+                }
+        ).addOnFailureListener(
+                new OnFailureListener(){
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        loadingView.setVisibility(View.INVISIBLE);
+                        loadingProgressBar.setVisibility(View.INVISIBLE);
+                        Toast.makeText(NewPropertyEntry.this, "Something Went Wrong With Updating!", Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+    }
+
+    /*Backend Interactions End*/
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_property_entry);
+
+        mContext = this;
+
+        db = FirebaseFirestore.getInstance();
+
+        validation = new Validation();
+
+        InitializeResources();
+
+        InitializeWidgets();
+
+        InitializeFilePicker();
+    }
+
+    /*Event Handlers Start*/
+
+    private void PreviewPropertyImage()
+    {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        launcher.launch(intent);
     }
 
     public void GetPropertyImage(View view)
@@ -396,4 +411,6 @@ public class NewPropertyEntry extends AppCompatActivity {
             InitiateDataSubmissionProcess();
         }
     }
+
+    /*Event Handlers End*/
 }
