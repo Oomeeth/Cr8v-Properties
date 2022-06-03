@@ -36,5 +36,11 @@
 
 [Example code on how to create the image preview feature](https://stackoverflow.com/questions/67156608/how-get-image-from-gallery-in-fragmentjetpack-navigation-component/67156964#67156964)
 
+[How to use the RecyclerView Widget](https://riptutorial.com/recyclerview/example/19316/installation---setup#:~:text=To%20create%20a%20custom%20layout,LayoutManager%20class.&text=Now%20add%20a%20RecyclerView%20in%20your%20layout%20like%20this.&text=Once%20you%20have%20added%20a,the%20data%20to%20be%20displayed.)
+
+# Topics to investigate further:
+- Fragments
+- Adapter
+
 # Demo
 [App Demo (30/05/2022)](https://youtu.be/-0kXU6xjp8U)

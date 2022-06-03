@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+  <TextView
+      android:id="@+id/textView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="20dp"
+      android:text="Price:"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/image_property_home" />
+
+  <TextView
+      android:id="@+id/price_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:text="0"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/textView"
+      app:layout_constraintStart_toEndOf="@+id/textView"
+      app:layout_constraintTop_toTopOf="@+id/textView" />
+
+  <TextView
+      android:id="@+id/textView6"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="10dp"
+      android:text="Location:"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+  <TextView
+      android:id="@+id/location_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:text="N/A"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/textView6"
+      app:layout_constraintStart_toEndOf="@+id/textView6"
+      app:layout_constraintTop_toTopOf="@+id/textView6" />
+
+  <ImageView
+      android:id="@+id/imageView"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="20dp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/location_property_home"
+      app:srcCompat="@drawable/bedroom" />
+
+  <TextView
+      android:id="@+id/bedrooms_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:text="0"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/imageView"
+      app:layout_constraintStart_toEndOf="@+id/imageView"
+      app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+  <ImageView
+      android:id="@+id/imageView2"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="20dp"
+      app:layout_constraintStart_toEndOf="@+id/bedrooms_property_home"
+      app:layout_constraintTop_toBottomOf="@+id/location_property_home"
+      app:srcCompat="@drawable/bathroom" />
+
+  <TextView
+      android:id="@+id/bathrooms_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:text="0"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+      app:layout_constraintStart_toEndOf="@+id/imageView2"
+      app:layout_constraintTop_toTopOf="@+id/imageView2" />
+
+  <ImageView
+      android:id="@+id/imageView3"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="20dp"
+      app:layout_constraintStart_toEndOf="@+id/bathrooms_property_home"
+      app:layout_constraintTop_toBottomOf="@+id/location_property_home"
+      app:srcCompat="@drawable/garage" />
+
+  <TextView
+      android:id="@+id/garages_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:text="0"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+      app:layout_constraintStart_toEndOf="@+id/imageView3"
+      app:layout_constraintTop_toTopOf="@+id/imageView3" />
+
+  <ImageView
+      android:id="@+id/imageView4"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="20dp"
+      app:layout_constraintStart_toEndOf="@+id/garages_property_home"
+      app:layout_constraintTop_toBottomOf="@+id/location_property_home"
+      app:srcCompat="@drawable/area" />
+
+  <TextView
+      android:id="@+id/area_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="10dp"
+      android:text="0"
+      android:textColor="#000000"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+      app:layout_constraintStart_toEndOf="@+id/imageView4"
+      app:layout_constraintTop_toTopOf="@+id/imageView4" />
+
+  <ImageView
+      android:id="@+id/image_property_home"
+      android:layout_width="wrap_content"
+      android:layout_height="200dp"
+      android:layout_marginStart="20dp"
+      android:layout_marginTop="20dp"
+      android:layout_marginEnd="20dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:srcCompat="@drawable/placeholder_image" />
+
+  <ImageButton
+      android:id="@+id/edit_property_home"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      android:scaleType="center"
+      app:layout_constraintEnd_toEndOf="@+id/image_property_home"
+      app:layout_constraintTop_toTopOf="@+id/image_property_home"
+      app:srcCompat="@android:drawable/ic_menu_edit" />
+
+  <ImageButton
+      android:id="@+id/delete_property_home"
+      android:layout_width="48dp"
+      android:layout_height="48dp"
+      app:layout_constraintEnd_toStartOf="@+id/edit_property_home"
+      app:layout_constraintTop_toTopOf="@+id/image_property_home"
+      app:srcCompat="@android:drawable/ic_menu_delete" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
