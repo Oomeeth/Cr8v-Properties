@@ -11,6 +11,8 @@
 
 26/05/2022 - 30/05/2022 - Create a new Entry completed - Read an input stream (image only), preview image in ImageView widget, create a new user folder on Firebase Storage, upload file to storage.
 
+02/05/2022 - 03/05/2022 - List all property entries in home screen.
+
 # Completed tasks:
 - Learning Android + Java.
 - Learn Firebase.
