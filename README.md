@@ -18,6 +18,7 @@
 - Design sign up screen + develop functionality for sign up screen.
 - Design log in screen + Develop functionality for log in screen.
 - Create a new Entry - Read an input stream (image only), preview image in ImageView widget, create a new user folder on Firebase Storage, upload file to storage.
+- List all property entries in home screen
 
 # Outstanding tasks:
 - Update a property entry and delete a property entry. (25/05/2022)
@@ -41,6 +42,8 @@
 # Topics to investigate further:
 - Fragments
 - Adapter
+- Anonymous classes
+- Async operations with Java (see `await` equivalent feature, instead of `OnCompleteListener()/OnSuccessListener()`)
 
 # Demo
-[App Demo (30/05/2022)](https://youtu.be/-0kXU6xjp8U)
+[App Demo (30/05/2022)](https://youtu.be/0QuGpJQ6hiw)
