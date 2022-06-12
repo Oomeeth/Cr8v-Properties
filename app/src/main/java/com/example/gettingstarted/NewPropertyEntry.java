@@ -151,9 +151,9 @@ public class NewPropertyEntry extends AppCompatActivity {
     }
 
     //Get property count
-       //Submit data to FireStore
-          //Upload Property Image
-             //Set new property count
+        //Upload Property Image
+            //Submit data to FireStore
+                //Set new property count
     private void InitiateDataSubmissionProcess()
     {
         loadingView.setVisibility(View.VISIBLE);
@@ -201,7 +201,7 @@ public class NewPropertyEntry extends AppCompatActivity {
     {
         String userUID = GetUserUID();
 
-        StorageReference fileUploadStorage = FirebaseStorage.getInstance().getReference().child("properties/" + String.valueOf(_propertyLength) + ".png");
+        StorageReference fileUploadStorage = FirebaseStorage.getInstance().getReference().child("properties/" + String.valueOf(_propertyLength) + ".jpg");
 
         fileUploadStorage.listAll().addOnSuccessListener(
                 new OnSuccessListener<ListResult>(){
@@ -273,6 +273,7 @@ public class NewPropertyEntry extends AppCompatActivity {
             property.put("description", _description);
             property.put("created_by", userUID);
             property.put("created_on", FieldValue.serverTimestamp());
+            property.put("image_url", "gs://propertyapp-bcc21.appspot.com/properties/" + String.valueOf(_propertyLength) + ".jpg");
 
             propertyRoot.put(String.valueOf(_propertyLength), property);
 

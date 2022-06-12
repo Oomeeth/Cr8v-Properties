@@ -44,6 +44,7 @@ public class PropertyHome extends AppCompatActivity
     private Property[] allProperties;
     private View backgroundBlocker;
     private ProgressBar progressBar;
+    private int downloadIteration = 0;
 
     private void ChangeActivity(Class className)
     {
@@ -74,16 +75,20 @@ public class PropertyHome extends AppCompatActivity
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void DownloadImageBitmap(final int _currenIteration, final StorageReference imageRef, final boolean isLastEntry)
+    private void DownloadImageBitmap(final int _currenIteration, final StorageReference imageRef)
     {
         imageRef.getBytes(6291456).addOnSuccessListener(
                 new OnSuccessListener<byte[]>() {
                     @Override
-                    public void onSuccess(byte[] bytes) {
+                    public void onSuccess(byte[] bytes)
+                    {
                         Bitmap _imageBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         allProperties[_currenIteration].imageBitmap = _imageBitmap;
 
-                        if(isLastEntry){
+                        downloadIteration++;
+
+                        if(downloadIteration == allProperties.length)
+                        {
                             DisplayAllProperties();
                         }
                     }
@@ -112,13 +117,7 @@ public class PropertyHome extends AppCompatActivity
                             //Get all files inside "properties"
                             for(StorageReference prefix : listResult.getItems())
                             {
-                                if(iteration == (listResult.getItems().size() - 1)) {
-                                    DownloadImageBitmap(iteration, prefix, true);
-                                }
-                                else
-                                {
-                                    DownloadImageBitmap(iteration, prefix, false);
-                                }
+                                DownloadImageBitmap(iteration, prefix);
 
                                 iteration++;
                             }
